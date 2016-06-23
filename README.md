@@ -1,6 +1,6 @@
 # EMC1701-2 - High-Side Current Sensor
 
-The [EMC1701-2](http://ww1.microchip.com/downloads/en/DeviceDoc/1701.pdf) is a high-side current and temperature sensor. Unless otherwise noted, all measurement units will be either Volts, Amps, Watts, or Celcius.
+The [EMC1701-2](http://ww1.microchip.com/downloads/en/DeviceDoc/1701.pdf) is a high-side current and temperature sensor. Unless otherwise noted, all measurement units will be either Volts, Amps, Watts, or celsius.
 
 ## Class Usage
 
@@ -69,7 +69,7 @@ The *configureVoltageSampler()* method configures the device's voltage sampler.
 
 Choices for numOutOfLimits are 1 (default), 2, 3, and 4. Choices for numAverages are disabled (default), 2x, 4x, and 8x. Both numOutOfLimits and numAverages are rounded-up, bounded, and returned.
 
-```Squirrel
+```squirrel
 // Configure voltage sampler with numOutOfLimits of 2 measurements, numAverages of 2x, and asserting the Peak Dector Circuitry to the THERM pin.
 emc.configureVoltageSampler(2, 2, true);
 //returns { "numOutOfLimits" : 2, "numAverages" : 2}
@@ -85,9 +85,9 @@ emc.configureVoltageSampler(2, 2, true);
 
 The *configurePeakDetection()* method controls the threshold and durations used by the Peak Detection circuitry. At all times, the Peak Detection threshold and duration are set by the values written into this register. The method will return the set threshold and duration.
 
-```Squirrel
-{ "threshold" : <_peakthreshold>,
-  "duration"   : <_peakduration> }
+```squirrel
+local data = configurePeakDetection(35, 250);
+//data = { "threshold" : <_peakthreshold>, "duration" : <_peakduration> }
 ```
 
 ### configureCurrentSampler(*[queue][,average][,time][,range]*)
@@ -101,13 +101,9 @@ The *configurePeakDetection()* method controls the threshold and durations used 
 
 The *configureCurrentSampler()* method The Current Sense Sampling Configuration register stores the controls for determining the Current Sense sampling / update time. The method will return the set parameters.
 
-``` 
-{
-  "queue"        : int, 
-  "averageing"   : int, 
-  "samplingtime" : int, 
-  "range"        : int
-}
+```squirrel
+local data = emc.configureCurrentSampler(3, 2, 250, 40);
+//data = { "queue" : int, "averageing" : int, "samplingtime" : int, "range" : int }
 ```
 
 
@@ -146,6 +142,9 @@ local data = emc.fastRead();
 This method returns the status of the EMC1701 in the following table:
 
 ```squirrel
+local status = emc.getStatus();
+
+//status =
 {
   "busy": bool,  // True if one of the ADCs is currently converting. This bit does not cause either the ALERT or THERM pins to be asserted.
   "peak": bool,  // True if the Peak Detector circuitry has detected a current peak that is greater than the programmed threshold for longer than the programmed duration.
@@ -188,7 +187,7 @@ server.log(format("Power = %f Watts", emc.getPower()));
 
 ### getTemp([unit])
 
-This method returns a single temperature measurement. Calling this method without any parameters will return a Celcius measurement; calling with "f" or "F" for paremeter will return the result in Fahrenheit.
+This method returns a single temperature measurement. Calling this method without any parameters will return a celsius measurement; calling with "f" or "F" for paremeter will return the result in Fahrenheit.
 
 ```squirrel
 // Get temp in Fahrenheit
@@ -219,7 +218,7 @@ Returns the one-byte die revision of the sensor.
 
 ```squirrel
 local revision = emc.getRevision();
-server.log(format("EMC1701 die revision: 0x%0X", revision));
+server.log(format("EMC1701 die revision: 0x%02X", revision));
 ```
 
 
